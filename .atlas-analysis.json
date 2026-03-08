@@ -1,0 +1,86 @@
+{
+  "projectType": "general",
+  "projectName": "Data Architecture",
+  "projectDescription": "A Mintlify starter kit providing templates and examples for building beautiful documentation sites.",
+  "theme": "mint",
+  "primaryColor": "#54545c",
+  "lightColor": "#07C983",
+  "darkColor": "#15803D",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Guides",
+        "groups": [
+          {
+            "group": "Getting started",
+            "pages": [
+              "index",
+              "quickstart",
+              "development"
+            ]
+          },
+          {
+            "group": "Customization",
+            "pages": [
+              "essentials/settings",
+              "essentials/navigation"
+            ]
+          },
+          {
+            "group": "Writing content",
+            "pages": [
+              "essentials/markdown",
+              "essentials/code",
+              "essentials/images",
+              "essentials/reusable-snippets"
+            ]
+          },
+          {
+            "group": "AI tools",
+            "pages": [
+              "ai-tools/cursor",
+              "ai-tools/claude-code",
+              "ai-tools/windsurf"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API reference",
+        "groups": [
+          {
+            "group": "API documentation",
+            "pages": [
+              "api-reference/introduction"
+            ]
+          },
+          {
+            "group": "Endpoint examples",
+            "pages": [
+              "api-reference/endpoint/get",
+              "api-reference/endpoint/create",
+              "api-reference/endpoint/delete",
+              "api-reference/endpoint/webhook"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "MDX content authoring with rich components",
+    "OpenAPI-based API documentation",
+    "AI coding tool integration (Cursor, Claude Code, Windsurf)",
+    "Customizable theming and navigation",
+    "Real-time local preview with Mint CLI",
+    "Automatic GitHub deployment"
+  ],
+  "publicApiSurface": [
+    "MDX components (Card, CardGroup, Accordion, Steps, Tabs)",
+    "docs.json configuration schema",
+    "OpenAPI specification support",
+    "Mint CLI commands (dev, broken-links, update)",
+    "Reusable content snippets",
+    "Custom navigation structure"
+  ]
+}

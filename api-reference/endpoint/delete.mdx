@@ -1,4 +1,430 @@
 ---
 title: 'Delete Plant'
-openapi: 'DELETE /plants/{id}'
+description: 'Remove a single plant from the store using its unique ID'
 ---
+
+## Overview
+
+The Delete Plant endpoint permanently removes a plant from the store based on the ID supplied. This operation cannot be undone, so use it carefully.
+
+## Endpoint
+
+```bash
+DELETE /plants/{id}
+```
+
+## Authentication
+
+This endpoint requires Bearer token authentication. Include your token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_TOKEN
+```
+
+## Path Parameters
+
+<ParamField path="id" type="integer" format="int64" required>
+  The unique ID of the plant to delete. This ID is returned when you create a plant or can be retrieved from the Get Plants endpoint.
+  
+  **Requirements:**
+  - Must be a valid integer
+  - Must correspond to an existing plant
+  - User must have permission to delete the plant
+  
+  **Example values:**
+  - `1` - Delete plant with ID 1
+  - `42` - Delete plant with ID 42
+  - `1234` - Delete plant with ID 1234
+</ParamField>
+
+## Request Example
+
+<CodeGroup>
+
+```bash cURL
+curl -X DELETE \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  "http://sandbox.mintlify.com/plants/42"
+```
+
+```javascript JavaScript
+const plantId = 42;
+
+const response = await fetch(
+  `http://sandbox.mintlify.com/plants/${plantId}`,
+  {
+    method: 'DELETE',
+    headers: {
+      'Authorization': 'Bearer YOUR_TOKEN'
+    }
+  }
+);
+
+if (response.status === 204) {
+  console.log('Plant deleted successfully');
+}
+```
+
+```python Python
+import requests
+
+plant_id = 42
+
+headers = {
+    'Authorization': 'Bearer YOUR_TOKEN'
+}
+
+response = requests.delete(
+    f'http://sandbox.mintlify.com/plants/{plant_id}',
+    headers=headers
+)
+
+if response.status_code == 204:
+    print('Plant deleted successfully')
+```
+
+```go Go
+package main
+
+import (
+    "fmt"
+    "net/http"
+)
+
+func main() {
+    plantID := 42
+    
+    url := fmt.Sprintf(
+        "http://sandbox.mintlify.com/plants/%d",
+        plantID,
+    )
+    
+    req, _ := http.NewRequest("DELETE", url, nil)
+    req.Header.Set("Authorization", "Bearer YOUR_TOKEN")
+    
+    client := &http.Client{}
+    resp, _ := client.Do(req)
+    defer resp.Body.Close()
+    
+    if resp.StatusCode == 204 {
+        fmt.Println("Plant deleted successfully")
+    }
+}
+```
+
+```ruby Ruby
+require 'net/http'
+require 'uri'
+
+plant_id = 42
+uri = URI("http://sandbox.mintlify.com/plants/#{plant_id}")
+
+http = Net::HTTP.new(uri.host, uri.port)
+request = Net::HTTP::Delete.new(uri.path)
+request['Authorization'] = 'Bearer YOUR_TOKEN'
+
+response = http.request(request)
+
+if response.code == '204'
+  puts 'Plant deleted successfully'
+end
+```
+
+</CodeGroup>
+
+## Response
+
+### Success Response (204)
+
+When the plant is successfully deleted, the API returns a `204 No Content` status code with an empty response body.
+
+<ResponseField name="status" type="204">
+  No content returned. The absence of an error indicates successful deletion.
+</ResponseField>
+
+```bash
+HTTP/1.1 204 No Content
+```
+
+<Note>
+  A 204 status code with no response body is the standard REST API pattern for successful DELETE operations. Check the status code rather than the response body to confirm deletion.
+</Note>
+
+### Error Response (400)
+
+Returned when the deletion cannot be completed due to an error.
+
+<ResponseField name="error" type="integer" format="int32" required>
+  The error code indicating the type of error that occurred
+</ResponseField>
+
+<ResponseField name="message" type="string" required>
+  A descriptive error message explaining what went wrong
+</ResponseField>
+
+```json
+{
+  "error": 400,
+  "message": "Plant not found or you don't have permission to delete it"
+}
+```
+
+## Usage Examples
+
+### Delete a Specific Plant
+
+Remove a plant by its ID:
+
+```bash
+curl -X DELETE \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  "http://sandbox.mintlify.com/plants/123"
+```
+
+### Delete with Error Handling
+
+Implement proper error handling in JavaScript:
+
+```javascript
+async function deletePlant(plantId) {
+  try {
+    const response = await fetch(
+      `http://sandbox.mintlify.com/plants/${plantId}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Authorization': 'Bearer YOUR_TOKEN'
+        }
+      }
+    );
+    
+    if (response.status === 204) {
+      console.log(`Plant ${plantId} deleted successfully`);
+      return true;
+    } else if (response.status === 400) {
+      const error = await response.json();
+      console.error(`Failed to delete plant: ${error.message}`);
+      return false;
+    } else {
+      console.error(`Unexpected status code: ${response.status}`);
+      return false;
+    }
+  } catch (error) {
+    console.error('Network error:', error);
+    return false;
+  }
+}
+
+// Usage
+await deletePlant(42);
+```
+
+### Delete with Confirmation
+
+Implement a safe deletion pattern with confirmation:
+
+```python
+import requests
+
+def delete_plant_with_confirmation(plant_id):
+    # First, verify the plant exists
+    headers = {'Authorization': 'Bearer YOUR_TOKEN'}
+    
+    # Get plant details
+    get_response = requests.get(
+        f'http://sandbox.mintlify.com/plants',
+        headers=headers
+    )
+    
+    plants = get_response.json()
+    plant = next((p for p in plants if p['id'] == plant_id), None)
+    
+    if not plant:
+        print(f"Plant {plant_id} not found")
+        return False
+    
+    # Confirm deletion
+    print(f"Are you sure you want to delete '{plant['name']}'? (yes/no)")
+    confirmation = input().lower()
+    
+    if confirmation == 'yes':
+        # Proceed with deletion
+        delete_response = requests.delete(
+            f'http://sandbox.mintlify.com/plants/{plant_id}',
+            headers=headers
+        )
+        
+        if delete_response.status_code == 204:
+            print(f"Plant '{plant['name']}' deleted successfully")
+            return True
+        else:
+            error = delete_response.json()
+            print(f"Error: {error['message']}")
+            return False
+    else:
+        print("Deletion cancelled")
+        return False
+
+# Usage
+delete_plant_with_confirmation(42)
+```
+
+### Batch Delete Plants
+
+Delete multiple plants by their IDs:
+
+```javascript
+async function deletePlants(plantIds) {
+  const results = [];
+  
+  for (const id of plantIds) {
+    const response = await fetch(
+      `http://sandbox.mintlify.com/plants/${id}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Authorization': 'Bearer YOUR_TOKEN'
+        }
+      }
+    );
+    
+    results.push({
+      id,
+      success: response.status === 204
+    });
+  }
+  
+  return results;
+}
+
+// Delete plants with IDs 1, 2, and 3
+const results = await deletePlants([1, 2, 3]);
+console.log(results);
+// Output: [{id: 1, success: true}, {id: 2, success: true}, {id: 3, success: false}]
+```
+
+<Warning>
+  Deletion is permanent and cannot be undone. Always verify the plant ID before deletion and consider implementing a confirmation step in your application.
+</Warning>
+
+## Common Error Scenarios
+
+### Plant Not Found
+
+Attempting to delete a non-existent plant:
+
+```bash
+Request:
+DELETE /plants/999999
+
+Response (400):
+{
+  "error": 400,
+  "message": "Plant with ID 999999 does not exist"
+}
+```
+
+### Permission Denied
+
+Attempting to delete a plant without proper permissions:
+
+```json
+Response (400):
+{
+  "error": 400,
+  "message": "You don't have permission to delete this plant"
+}
+```
+
+### Invalid ID Format
+
+Providing an invalid ID format:
+
+```bash
+# Incorrect - ID must be an integer
+DELETE /plants/abc
+
+Response (400):
+{
+  "error": 400,
+  "message": "Invalid plant ID format. Must be an integer."
+}
+```
+
+### Unauthorized Request
+
+Missing or invalid authentication token:
+
+```json
+Response (401):
+{
+  "error": 401,
+  "message": "Invalid or missing authentication token"
+}
+```
+
+## Best Practices
+
+- **Verify before deleting** - Retrieve the plant details before deletion to confirm you're deleting the correct item
+- **Implement confirmation** - Add a confirmation step in your UI to prevent accidental deletions
+- **Handle errors gracefully** - Check for both success (204) and error (400) responses
+- **Log deletions** - Keep an audit log of deleted plants for compliance and debugging
+- **Consider soft deletes** - For critical applications, consider implementing soft deletes (marking as deleted) instead of hard deletes
+- **Validate IDs** - Ensure the ID is a valid integer before making the request
+
+## Integration Considerations
+
+### Cascade Deletions
+
+If your application has related data (e.g., care logs, photos), ensure you handle cascade deletions appropriately:
+
+```javascript
+async function deletePlantWithRelatedData(plantId) {
+  // Delete related data first
+  await deleteCareLogs(plantId);
+  await deletePlantPhotos(plantId);
+  
+  // Then delete the plant
+  const response = await fetch(
+    `http://sandbox.mintlify.com/plants/${plantId}`,
+    {
+      method: 'DELETE',
+      headers: { 'Authorization': 'Bearer YOUR_TOKEN' }
+    }
+  );
+  
+  return response.status === 204;
+}
+```
+
+### Optimistic UI Updates
+
+Update your UI optimistically while the deletion is in progress:
+
+```javascript
+function deletePlantOptimistic(plantId) {
+  // Remove from UI immediately
+  removePlantFromUI(plantId);
+  
+  // Make API call
+  fetch(`http://sandbox.mintlify.com/plants/${plantId}`, {
+    method: 'DELETE',
+    headers: { 'Authorization': 'Bearer YOUR_TOKEN' }
+  })
+  .then(response => {
+    if (response.status !== 204) {
+      // Revert UI change on failure
+      restorePlantInUI(plantId);
+      throw new Error('Deletion failed');
+    }
+  })
+  .catch(error => {
+    console.error('Failed to delete plant:', error);
+  });
+}
+```
+
+## Related Endpoints
+
+- [Get Plants](/api-reference/endpoint/get) - Retrieve plants to find IDs for deletion
+- [Create Plant](/api-reference/endpoint/create) - Add new plants to the store

@@ -1,28 +1,30 @@
 ---
-title: 'Introduction'
-description: 'Example section for showcasing API endpoints'
+title: 'API Introduction'
+description: 'Learn how to integrate with the Plant Store API using OpenAPI specifications'
 ---
 
-<Note>
-  If you're not looking to build API reference documentation, you can delete
-  this section by removing the api-reference folder.
-</Note>
+## Welcome to the Plant Store API
 
-## Welcome
+The Plant Store API allows you to manage a collection of plants programmatically. This API demonstrates features of the OpenAPI 3.1.0 specification and provides a complete example of REST API best practices.
 
-There are two ways to build API documentation: [OpenAPI](https://mintlify.com/docs/api-playground/openapi/setup) and [MDX components](https://mintlify.com/docs/api-playground/mdx/configuration). For the starter kit, we are using the following OpenAPI specification.
+## Base URL
 
-<Card
-  title="Plant Store Endpoints"
-  icon="leaf"
-  href="https://github.com/mintlify/starter/blob/main/api-reference/openapi.json"
->
-  View the OpenAPI specification file
-</Card>
+All API requests should be made to:
+
+```bash
+http://sandbox.mintlify.com
+```
 
 ## Authentication
 
-All API endpoints are authenticated using Bearer tokens and picked up from the specification file.
+All API endpoints require authentication using Bearer tokens. Include your token in the Authorization header of every request:
+
+```bash
+curl -H "Authorization: Bearer YOUR_TOKEN" \
+  http://sandbox.mintlify.com/plants
+```
+
+The authentication scheme is defined in the OpenAPI specification:
 
 ```json
 "security": [
@@ -31,3 +33,122 @@ All API endpoints are authenticated using Bearer tokens and picked up from the s
   }
 ]
 ```
+
+<Warning>
+  Keep your API tokens secure and never commit them to version control. Rotate tokens regularly and revoke compromised tokens immediately.
+</Warning>
+
+## Using OpenAPI with Mintlify
+
+This API documentation is built using Mintlify's OpenAPI integration. The complete API specification is available in the `openapi.json` file, which Mintlify uses to automatically generate interactive API references.
+
+### Benefits of OpenAPI Integration
+
+- **Auto-generated documentation** - API endpoints, parameters, and responses are automatically documented
+- **Interactive playground** - Test API calls directly from the documentation
+- **Type safety** - Request and response schemas are validated against the OpenAPI spec
+- **Always up-to-date** - Documentation updates automatically when the spec changes
+
+<Card
+  title="View OpenAPI Specification"
+  icon="code"
+  href="https://github.com/mintlify/starter/blob/main/api-reference/openapi.json"
+>
+  Explore the complete OpenAPI 3.1.0 specification file for the Plant Store API
+</Card>
+
+## Available Endpoints
+
+The Plant Store API provides the following endpoints:
+
+<CardGroup cols={2}>
+  <Card
+    title="Get Plants"
+    icon="list"
+    href="/api-reference/endpoint/get"
+  >
+    Retrieve all plants with optional filtering and pagination
+  </Card>
+  
+  <Card
+    title="Create Plant"
+    icon="plus"
+    href="/api-reference/endpoint/create"
+  >
+    Add a new plant to the store
+  </Card>
+  
+  <Card
+    title="Delete Plant"
+    icon="trash"
+    href="/api-reference/endpoint/delete"
+  >
+    Remove a plant from the store by ID
+  </Card>
+  
+  <Card
+    title="Plant Webhook"
+    icon="webhook"
+    href="/api-reference/endpoint/webhook"
+  >
+    Receive real-time notifications when plants are added
+  </Card>
+</CardGroup>
+
+## Quick Start
+
+### 1. Get Your API Token
+
+Contact your administrator to obtain a Bearer token for API access.
+
+### 2. Make Your First Request
+
+Retrieve all plants from the store:
+
+```bash
+curl -H "Authorization: Bearer YOUR_TOKEN" \
+  http://sandbox.mintlify.com/plants?limit=10
+```
+
+### 3. Create a Plant
+
+Add a new plant to your collection:
+
+```bash
+curl -X POST \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Monstera Deliciosa", "tag": "tropical"}' \
+  http://sandbox.mintlify.com/plants
+```
+
+## Response Format
+
+All API responses are returned in JSON format. Successful responses include the requested data, while errors include an error code and descriptive message.
+
+### Success Response
+
+```json
+{
+  "id": 1,
+  "name": "Monstera Deliciosa",
+  "tag": "tropical"
+}
+```
+
+### Error Response
+
+```json
+{
+  "error": 400,
+  "message": "Invalid request parameters"
+}
+```
+
+## Rate Limiting
+
+API requests are rate-limited to ensure fair usage and system stability. Monitor response headers for rate limit information.
+
+## Support
+
+If you encounter issues or have questions about the API, please refer to the individual endpoint documentation or contact support.

@@ -1,35 +1,389 @@
 ---
-title: 'Code blocks'
-description: 'Display inline code and code blocks'
+title: 'Code Blocks'
+description: 'Add syntax-highlighted code examples to your documentation'
 icon: 'code'
 ---
 
+Code blocks are essential for technical documentation. Mintlify provides powerful syntax highlighting and features to make your code examples clear and useful.
+
 ## Inline code
 
-To denote a `word` or `phrase` as code, enclose it in backticks (`).
+Use backticks to denote inline code: `npm install` or `const example = true`.
 
+```md
+Use backticks: `npm install` or `const example = true`
 ```
-To denote a `word` or `phrase` as code, enclose it in backticks (`).
+
+## Basic code blocks
+
+Create code blocks with triple backticks and specify the language for syntax highlighting:
+
+```javascript
+function greet(name) {
+  console.log(`Hello, ${name}!`);
+  return true;
+}
+
+greet('World');
 ```
 
-## Code blocks
+````md
+```javascript
+function greet(name) {
+  console.log(`Hello, ${name}!`);
+  return true;
+}
+```
+````
 
-Use [fenced code blocks](https://www.markdownguide.org/extended-syntax/#fenced-code-blocks) by enclosing code in three backticks and follow the leading ticks with the programming language of your snippet to get syntax highlighting. Optionally, you can also write the name of your code after the programming language.
+## Code block features
 
-```java HelloWorld.java
-class HelloWorld {
-    public static void main(String[] args) {
-        System.out.println("Hello, World!");
+### File names
+
+Add a filename after the language to show which file the code belongs to:
+
+```typescript server.ts
+import express from 'express';
+
+const app = express();
+const PORT = 3000;
+
+app.get('/', (req, res) => {
+  res.json({ message: 'Hello World' });
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+```
+
+````md
+```typescript server.ts
+import express from 'express';
+
+const app = express();
+// ... rest of code
+```
+````
+
+### Line highlighting
+
+Highlight specific lines to draw attention to important parts:
+
+```python {3-5}
+def calculate_fibonacci(n):
+    if n <= 1:
+        return n
+    else:
+        return calculate_fibonacci(n-1) + calculate_fibonacci(n-2)
+
+# Calculate the 10th Fibonacci number
+result = calculate_fibonacci(10)
+print(f"The 10th Fibonacci number is: {result}")
+```
+
+````md
+```python {3-5}
+def calculate_fibonacci(n):
+    if n <= 1:
+        return n
+    else:
+        return calculate_fibonacci(n-1) + calculate_fibonacci(n-2)
+```
+````
+
+## Multi-language examples
+
+Use `<CodeGroup>` to show the same example in multiple languages:
+
+<CodeGroup>
+
+```javascript JavaScript
+fetch('https://api.example.com/data', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer YOUR_TOKEN'
+  },
+  body: JSON.stringify({
+    name: 'John Doe',
+    email: 'john@example.com'
+  })
+})
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error('Error:', error));
+```
+
+```python Python
+import requests
+
+url = 'https://api.example.com/data'
+headers = {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer YOUR_TOKEN'
+}
+data = {
+    'name': 'John Doe',
+    'email': 'john@example.com'
+}
+
+response = requests.post(url, json=data, headers=headers)
+print(response.json())
+```
+
+```go Go
+package main
+
+import (
+    "bytes"
+    "encoding/json"
+    "fmt"
+    "net/http"
+)
+
+func main() {
+    url := "https://api.example.com/data"
+    
+    data := map[string]string{
+        "name":  "John Doe",
+        "email": "john@example.com",
     }
+    
+    jsonData, _ := json.Marshal(data)
+    
+    req, _ := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+    req.Header.Set("Content-Type", "application/json")
+    req.Header.Set("Authorization", "Bearer YOUR_TOKEN")
+    
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    if err != nil {
+        panic(err)
+    }
+    defer resp.Body.Close()
+    
+    fmt.Println("Response status:", resp.Status)
+}
+```
+
+```ruby Ruby
+require 'net/http'
+require 'json'
+
+uri = URI('https://api.example.com/data')
+http = Net::HTTP.new(uri.host, uri.port)
+http.use_ssl = true
+
+request = Net::HTTP::Post.new(uri.path, {
+  'Content-Type' => 'application/json',
+  'Authorization' => 'Bearer YOUR_TOKEN'
+})
+
+request.body = {
+  name: 'John Doe',
+  email: 'john@example.com'
+}.to_json
+
+response = http.request(request)
+puts JSON.parse(response.body)
+```
+
+</CodeGroup>
+
+````mdx
+<CodeGroup>
+
+```javascript JavaScript
+fetch('https://api.example.com/data', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({ name: 'John Doe' })
+})
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.example.com/data',
+    json={'name': 'John Doe'}
+)
+```
+
+</CodeGroup>
+````
+
+## Diff syntax
+
+Show code changes using diff syntax with `[!code ++]` and `[!code --]`:
+
+```javascript
+function processUser(user) {
+  const name = user.name; // [!code --]
+  const { name, email } = user; // [!code ++]
+  
+  console.log(name);
+  console.log(email); // [!code ++]
+  
+  return name;
+  return { name, email }; // [!code ++]
 }
 ```
 
 ````md
-```java HelloWorld.java
-class HelloWorld {
-    public static void main(String[] args) {
-        System.out.println("Hello, World!");
-    }
+```javascript
+function processUser(user) {
+  const name = user.name; // [!code --]
+  const { name, email } = user; // [!code ++]
+  
+  return name;
+  return { name, email }; // [!code ++]
 }
 ```
 ````
+
+## Language support
+
+Mintlify supports syntax highlighting for dozens of languages:
+
+<CardGroup cols={3}>
+  <Card title="JavaScript/TypeScript">
+    `javascript`, `typescript`, `jsx`, `tsx`
+  </Card>
+  <Card title="Python">
+    `python`, `py`
+  </Card>
+  <Card title="Go">
+    `go`, `golang`
+  </Card>
+  <Card title="Java">
+    `java`
+  </Card>
+  <Card title="C/C++">
+    `c`, `cpp`, `c++`
+  </Card>
+  <Card title="Rust">
+    `rust`, `rs`
+  </Card>
+  <Card title="Ruby">
+    `ruby`, `rb`
+  </Card>
+  <Card title="PHP">
+    `php`
+  </Card>
+  <Card title="Swift">
+    `swift`
+  </Card>
+  <Card title="Kotlin">
+    `kotlin`, `kt`
+  </Card>
+  <Card title="Shell">
+    `bash`, `shell`, `sh`
+  </Card>
+  <Card title="SQL">
+    `sql`
+  </Card>
+  <Card title="HTML/CSS">
+    `html`, `css`, `scss`
+  </Card>
+  <Card title="JSON/YAML">
+    `json`, `yaml`, `yml`
+  </Card>
+  <Card title="Markdown">
+    `markdown`, `md`, `mdx`
+  </Card>
+</CardGroup>
+
+## Real-world examples
+
+### Configuration file
+
+```json mintlify.json
+{
+  "name": "Documentation Starter Kit",
+  "logo": {
+    "dark": "/logo/dark.svg",
+    "light": "/logo/light.svg"
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#0D9373",
+    "light": "#07C983",
+    "dark": "#0D9373"
+  },
+  "topbarLinks": [
+    {
+      "name": "Support",
+      "url": "mailto:support@example.com"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Get Started",
+      "pages": ["index", "quickstart"]
+    }
+  ]
+}
+```
+
+### API request example
+
+```typescript
+interface CreateUserRequest {
+  name: string;
+  email: string;
+  role: 'admin' | 'user';
+}
+
+interface User extends CreateUserRequest {
+  id: string;
+  createdAt: Date;
+}
+
+async function createUser(data: CreateUserRequest): Promise<User> {
+  const response = await fetch('/api/users', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  
+  return await response.json();
+}
+
+// Usage
+const newUser = await createUser({
+  name: 'Jane Doe',
+  email: 'jane@example.com',
+  role: 'user'
+});
+```
+
+<Tip>
+Always specify the language for code blocks. It enables syntax highlighting and helps readers understand the context immediately.
+</Tip>
+
+## Best practices
+
+<AccordionGroup>
+  <Accordion title="Keep examples focused">
+    Show only the relevant code. Omit boilerplate and use comments to indicate omitted sections with `// ...`.
+  </Accordion>
+  <Accordion title="Test your code">
+    Ensure code examples are correct and tested. Broken examples frustrate users and damage trust.
+  </Accordion>
+  <Accordion title="Add context">
+    Use filenames, comments, and surrounding text to explain what the code does and when to use it.
+  </Accordion>
+  <Accordion title="Use realistic examples">
+    Avoid `foo`, `bar`, and `baz`. Use meaningful variable names that reflect real-world usage.
+  </Accordion>
+</AccordionGroup>

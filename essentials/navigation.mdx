@@ -1,87 +1,470 @@
 ---
 title: 'Navigation'
-description: 'The navigation field in docs.json defines the pages that go in the navigation menu'
+description: 'Organize your documentation structure with tabs, groups, and pages'
 icon: 'map'
 ---
 
-The navigation menu is the list of links on every website.
+The navigation structure in `docs.json` defines how users browse your documentation. You'll update this field every time you add a new page, as pages don't appear automatically.
 
-You will likely update `docs.json` every time you add a new page. Pages do not show up automatically.
+## Navigation Structure
 
-## Navigation syntax
+Navigation in Mintlify is hierarchical with three levels: tabs, groups, and pages.
 
-Our navigation syntax is recursive which means you can make nested navigation groups. You don't need to include `.mdx` in page names.
-
-<CodeGroup>
-
-```json Regular Navigation
-"navigation": {
-  "tabs": [
-    {
-      "tab": "Docs",
-      "groups": [
-        {
-          "group": "Getting Started",
-          "pages": ["quickstart"]
-        }
-      ]
-    }
-  ]
+```json
+{
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Guides",
+        "groups": [
+          {
+            "group": "Getting started",
+            "pages": ["index", "quickstart", "development"]
+          }
+        ]
+      }
+    ]
+  }
 }
 ```
 
-```json Nested Navigation
-"navigation": {
-  "tabs": [
-    {
-      "tab": "Docs",
-      "groups": [
-        {
-          "group": "Getting Started",
-          "pages": [
-            "quickstart",
-            {
-              "group": "Nested Reference Pages",
-              "pages": ["nested-reference-page"]
-            }
-          ]
-        }
-      ]
-    }
-  ]
+<Note>
+You don't need to include `.mdx` file extensions in page names. Mintlify automatically resolves them.
+</Note>
+
+## Tabs
+
+Tabs are top-level navigation sections that appear horizontally at the top of your sidebar. Use tabs to separate major areas of your documentation.
+
+<CodeGroup>
+
+```json Single Tab
+{
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Guides",
+        "groups": [...]
+      }
+    ]
+  }
+}
+```
+
+```json Multiple Tabs
+{
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Guides",
+        "groups": [...]
+      },
+      {
+        "tab": "API reference",
+        "groups": [...]
+      }
+    ]
+  }
 }
 ```
 
 </CodeGroup>
 
-## Folders
+Common tab patterns:
+- **Guides** - Tutorials and how-to documentation
+- **API Reference** - API endpoint documentation
+- **Examples** - Code examples and use cases
+- **Resources** - Additional materials and references
 
-Simply put your MDX files in folders and update the paths in `docs.json`.
+## Groups
 
-For example, to have a page at `https://yoursite.com/your-folder/your-page` you would make a folder called `your-folder` containing an MDX file called `your-page.mdx`.
+Groups organize related pages within a tab. Each group displays as a collapsible section in the sidebar.
 
-<Warning>
-
-You cannot use `api` for the name of a folder unless you nest it inside another folder. Mintlify uses Next.js which reserves the top-level `api` folder for internal server calls. A folder name such as `api-reference` would be accepted.
-
-</Warning>
-
-```json Navigation With Folder
-"navigation": {
-  "tabs": [
+```json
+{
+  "tab": "Guides",
+  "groups": [
     {
-      "tab": "Docs",
-      "groups": [
-        {
-          "group": "Group Name",
-          "pages": ["your-folder/your-page"]
-        }
-      ]
+      "group": "Getting started",
+      "pages": ["index", "quickstart", "development"]
+    },
+    {
+      "group": "Customization",
+      "pages": ["essentials/settings", "essentials/navigation"]
+    },
+    {
+      "group": "Writing content",
+      "pages": ["essentials/markdown", "essentials/code", "essentials/images"]
     }
   ]
 }
 ```
 
-## Hidden pages
+<Note>
+Group names should be concise and descriptive. They help users quickly scan and find relevant content.
+</Note>
 
-MDX files not included in `docs.json` will not show up in the sidebar but are accessible through the search bar and by linking directly to them.
+## Pages
+
+Pages are individual MDX files in your documentation. Reference them by their path relative to your project root.
+
+### Basic Page References
+
+```json
+{
+  "group": "Getting started",
+  "pages": [
+    "index",
+    "quickstart",
+    "development"
+  ]
+}
+```
+
+### Pages in Folders
+
+Organize pages into folders and reference them with folder paths.
+
+```json
+{
+  "group": "Customization",
+  "pages": [
+    "essentials/settings",
+    "essentials/navigation",
+    "essentials/markdown"
+  ]
+}
+```
+
+For a page at `https://yoursite.com/essentials/settings`, create a file at `essentials/settings.mdx`.
+
+<Warning>
+You cannot use `api` as a top-level folder name. Next.js reserves this for internal server calls. Use names like `api-reference` instead, or nest it inside another folder.
+</Warning>
+
+## Nested Navigation
+
+Create nested groups for complex documentation structures. This is useful for detailed API references or multi-level guides.
+
+<Accordion title="Simple Nested Navigation">
+
+```json
+{
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Guides",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "quickstart",
+              {
+                "group": "Advanced Setup",
+                "pages": [
+                  "advanced/configuration",
+                  "advanced/deployment"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+</Accordion>
+
+<Accordion title="Deep Nested Navigation">
+
+```json
+{
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "API reference",
+        "groups": [
+          {
+            "group": "Endpoints",
+            "pages": [
+              "api-reference/introduction",
+              {
+                "group": "User Management",
+                "pages": [
+                  "api-reference/users/list",
+                  "api-reference/users/create",
+                  {
+                    "group": "User Permissions",
+                    "pages": [
+                      "api-reference/users/permissions/list",
+                      "api-reference/users/permissions/update"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+</Accordion>
+
+## Navigation Patterns
+
+### Documentation with API Reference
+
+A common pattern separates conceptual guides from API documentation.
+
+```json
+{
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Guides",
+        "groups": [
+          {
+            "group": "Getting started",
+            "pages": ["index", "quickstart", "development"]
+          },
+          {
+            "group": "Customization",
+            "pages": ["essentials/settings", "essentials/navigation"]
+          }
+        ]
+      },
+      {
+        "tab": "API reference",
+        "groups": [
+          {
+            "group": "API documentation",
+            "pages": ["api-reference/introduction"]
+          },
+          {
+            "group": "Endpoint examples",
+            "pages": [
+              "api-reference/endpoint/get",
+              "api-reference/endpoint/create",
+              "api-reference/endpoint/delete"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### Product Documentation
+
+For product docs, organize by user journey or feature area.
+
+```json
+{
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Getting started",
+            "pages": ["introduction", "installation", "authentication"]
+          },
+          {
+            "group": "Core features",
+            "pages": ["features/workspaces", "features/collaboration", "features/integrations"]
+          },
+          {
+            "group": "Advanced",
+            "pages": ["advanced/security", "advanced/performance", "advanced/customization"]
+          },
+          {
+            "group": "Support",
+            "pages": ["troubleshooting", "faq", "contact"]
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### Multi-Product Documentation
+
+For companies with multiple products, use tabs to separate each product.
+
+```json
+{
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Platform",
+        "groups": [
+          {
+            "group": "Getting started",
+            "pages": ["platform/introduction", "platform/quickstart"]
+          }
+        ]
+      },
+      {
+        "tab": "Analytics",
+        "groups": [
+          {
+            "group": "Getting started",
+            "pages": ["analytics/introduction", "analytics/quickstart"]
+          }
+        ]
+      },
+      {
+        "tab": "SDK",
+        "groups": [
+          {
+            "group": "Getting started",
+            "pages": ["sdk/introduction", "sdk/installation"]
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+## Hidden Pages
+
+MDX files not included in `docs.json` won't appear in the sidebar but remain accessible through:
+- Search bar results
+- Direct URL links
+- Internal page links
+
+This is useful for:
+- Draft pages you're still working on
+- Auxiliary pages linked from main content
+- Pages you want discoverable but not prominent
+
+## Global Anchors
+
+Add permanent navigation anchors that appear above tabs for important external links.
+
+```json
+{
+  "navigation": {
+    "global": {
+      "anchors": [
+        {
+          "anchor": "Documentation",
+          "href": "https://mintlify.com/docs",
+          "icon": "book-open-cover"
+        },
+        {
+          "anchor": "Blog",
+          "href": "https://mintlify.com/blog",
+          "icon": "newspaper"
+        }
+      ]
+    },
+    "tabs": [...]
+  }
+}
+```
+
+## Complete Example
+
+Here's a fully configured navigation structure demonstrating all concepts:
+
+```json
+{
+  "navigation": {
+    "global": {
+      "anchors": [
+        {
+          "anchor": "Documentation",
+          "href": "https://mintlify.com/docs",
+          "icon": "book-open-cover"
+        }
+      ]
+    },
+    "tabs": [
+      {
+        "tab": "Guides",
+        "groups": [
+          {
+            "group": "Getting started",
+            "pages": ["index", "quickstart", "development"]
+          },
+          {
+            "group": "Customization",
+            "pages": ["essentials/settings", "essentials/navigation"]
+          },
+          {
+            "group": "Writing content",
+            "pages": [
+              "essentials/markdown",
+              "essentials/code",
+              "essentials/images",
+              "essentials/reusable-snippets"
+            ]
+          },
+          {
+            "group": "AI tools",
+            "pages": ["ai-tools/cursor", "ai-tools/claude-code", "ai-tools/windsurf"]
+          }
+        ]
+      },
+      {
+        "tab": "API reference",
+        "groups": [
+          {
+            "group": "API documentation",
+            "pages": ["api-reference/introduction"]
+          },
+          {
+            "group": "Endpoint examples",
+            "pages": [
+              "api-reference/endpoint/get",
+              "api-reference/endpoint/create",
+              "api-reference/endpoint/delete",
+              "api-reference/endpoint/webhook"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Logical Grouping" icon="layer-group">
+    Group related pages together. Users should intuitively know where to find information.
+  </Card>
+  
+  <Card title="Consistent Naming" icon="font">
+    Use consistent naming conventions across groups and pages for better scannability.
+  </Card>
+  
+  <Card title="Shallow Hierarchies" icon="sitemap">
+    Avoid deep nesting. Keep navigation 2-3 levels deep for best user experience.
+  </Card>
+  
+  <Card title="Clear Labels" icon="tag">
+    Use descriptive, concise labels. Avoid jargon unless your audience expects it.
+  </Card>
+</CardGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Settings" icon="gear" href="/essentials/settings">
+    Customize your site's appearance and configuration
+  </Card>
+  <Card title="Markdown" icon="markdown" href="/essentials/markdown">
+    Learn Mintlify's markdown syntax and components
+  </Card>
+</CardGroup>

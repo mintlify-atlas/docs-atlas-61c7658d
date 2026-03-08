@@ -1,97 +1,124 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: "Data Architecture Documentation"
+description: "A comprehensive Mintlify starter kit for building beautiful, feature-rich documentation sites"
 ---
 
-## Setting up
+## Build beautiful documentation with Mintlify
 
-Get your documentation site up and running in minutes.
+A complete starter kit with examples, templates, and best practices for creating world-class documentation sites.
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
-
-## Make it yours
-
-Design a docs site that looks great and empowers your users.
-
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
+<CardGroup cols={2}>
+  <Card title="Get Started" icon="rocket" href="/quickstart">
+    Get your documentation site running locally in minutes with our three-step quickstart guide
   </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
+  <Card title="View on GitHub" icon="github" href="https://github.com/sorgm/data-architecture-docs">
+    Explore the source code and contribute to this starter kit
   </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
-  </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
-  </Card>
-</Columns>
+</CardGroup>
 
-## Create beautiful pages
+## Everything you need to create exceptional documentation
 
-Everything you need to create world-class documentation.
+This starter kit provides a complete foundation for your documentation site, with real examples and templates you can customize for your project.
 
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
+<CardGroup cols={2}>
+  <Card title="Quick Setup" icon="rocket" href="/quickstart">
+    Get your documentation site running locally in minutes with our three-step quickstart guide
   </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
+  <Card title="Rich Components" icon="palette" href="/essentials/markdown">
+    Use powerful MDX components like cards, accordions, tabs, and code groups to create engaging content
   </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
+  <Card title="API Documentation" icon="terminal" href="/api-reference/introduction">
+    Auto-generate beautiful API documentation from OpenAPI specifications
   </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
+  <Card title="AI-Powered Writing" icon="wand-magic-sparkles" href="/ai-tools/cursor">
+    Integrate with Cursor, Claude Code, and Windsurf for AI-assisted documentation writing
   </Card>
-</Columns>
+</CardGroup>
 
-## Need inspiration?
+## Key Features
 
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+<CardGroup cols={3}>
+  <Card title="MDX Content Authoring" icon="pen-fancy">
+    Write documentation using MDX with full support for React components and custom layouts
+  </Card>
+  <Card title="Customizable Theming" icon="paintbrush">
+    Match your brand perfectly with customizable colors, fonts, and themes
+  </Card>
+  <Card title="Real-time Preview" icon="eye">
+    See your changes instantly with the Mint CLI local development server
+  </Card>
+  <Card title="OpenAPI Support" icon="code">
+    Import OpenAPI specifications to automatically generate API reference pages
+  </Card>
+  <Card title="GitHub Integration" icon="github">
+    Automatically deploy changes when you push to your repository
+  </Card>
+  <Card title="Reusable Snippets" icon="recycle">
+    Create reusable content snippets to maintain consistency across your docs
+  </Card>
+</CardGroup>
+
+## Get Started in Three Steps
+
+<Steps>
+  <Step title="Clone and Install">
+    Clone the starter kit repository and install the Mintlify CLI to preview your docs locally
+    
+    ```bash
+    git clone https://github.com/sorgm/data-architecture-docs.git
+    cd data-architecture-docs
+    npm i -g mint
+    ```
+  </Step>
+  
+  <Step title="Customize Your Site">
+    Update `docs.json` to match your brand, then start the development server
+    
+    ```bash
+    mint dev
+    ```
+    
+    Your site will be available at `http://localhost:3000`
+  </Step>
+  
+  <Step title="Deploy">
+    Push your changes to GitHub and install the Mintlify GitHub app to automatically deploy
+    
+    ```bash
+    git add .
+    git commit -m "Initial documentation setup"
+    git push origin main
+    ```
+  </Step>
+</Steps>
+
+## What's Included
+
+This starter kit includes comprehensive examples of:
+
+- **Getting Started Guides** — Help users set up and configure your product
+- **Customization Options** — Show how to theme and style your documentation
+- **Content Writing** — Demonstrate MDX, code blocks, images, and reusable snippets
+- **AI Tools Integration** — Guide users through setting up AI coding assistants
+- **API Reference** — Example OpenAPI documentation with sample endpoints
+
+<Note>
+  Every example in this starter kit uses real Mintlify features and components. You can customize any page to fit your project's needs.
+</Note>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Quickstart Guide" icon="flag-checkered" href="/quickstart">
+    Follow our step-by-step guide to get up and running
+  </Card>
+  <Card title="Customize Settings" icon="sliders" href="/essentials/settings">
+    Learn how to customize colors, fonts, and navigation
+  </Card>
+  <Card title="Write Content" icon="file-lines" href="/essentials/markdown">
+    Explore MDX syntax and Mintlify components
+  </Card>
+  <Card title="API Documentation" icon="brackets-curly" href="/api-reference/introduction">
+    Set up API reference pages from OpenAPI specs
+  </Card>
+</CardGroup>

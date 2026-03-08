@@ -1,4 +1,441 @@
 ---
-title: 'New Plant'
-openapi: 'WEBHOOK /plant/webhook'
+title: 'Plant Webhook'
+description: 'Receive real-time notifications when new plants are added to the store'
 ---
+
+## Overview
+
+The Plant Webhook allows you to receive real-time notifications when new plants are added to the store. Instead of polling the API for changes, webhooks push data to your server as events occur, enabling efficient and immediate integration.
+
+## Webhook Endpoint
+
+```bash
+POST /plant/webhook
+```
+
+<Note>
+  This is a webhook endpoint that **you** implement on your server. The Plant Store API will send POST requests to your endpoint when plants are created.
+</Note>
+
+## How Webhooks Work
+
+1. **Register your webhook URL** with the Plant Store API (contact support for webhook registration)
+2. **Implement an endpoint** on your server to receive webhook POST requests
+3. **Validate incoming requests** to ensure they're from the Plant Store API
+4. **Process the payload** containing information about the new plant
+5. **Return a 200 status code** to acknowledge receipt
+
+## Authentication
+
+Webhook requests from the Plant Store API will include authentication headers. Verify these headers to ensure the request is legitimate:
+
+```bash
+X-Webhook-Signature: <signature>
+X-Webhook-Timestamp: <timestamp>
+```
+
+<Warning>
+  Always validate webhook signatures to prevent unauthorized requests. Reject requests with invalid signatures or timestamps older than 5 minutes.
+</Warning>
+
+## Webhook Payload
+
+When a new plant is added to the store, the Plant Store API sends a POST request to your registered webhook URL with the following payload:
+
+<ParamField body="id" type="integer" format="int64" required>
+  The unique identification number assigned to the newly created plant
+</ParamField>
+
+<ParamField body="name" type="string" required>
+  The name of the plant that was added to the store
+  
+  **Examples:**
+  - "Monstera Deliciosa"
+  - "Snake Plant"
+  - "Peace Lily"
+</ParamField>
+
+<ParamField body="tag" type="string">
+  Optional tag categorizing the plant type or characteristics
+  
+  **Common values:**
+  - "tropical"
+  - "succulent"
+  - "flowering"
+  - "indoor"
+  - "outdoor"
+</ParamField>
+
+### Example Payload
+
+```json
+{
+  "id": 42,
+  "name": "Monstera Deliciosa",
+  "tag": "tropical"
+}
+```
+
+## Response
+
+Your webhook endpoint should respond with a 200 status code to acknowledge successful receipt of the webhook:
+
+<ResponseField name="status" type="200" required>
+  Return a 200 status code to indicate that the webhook data was received and processed successfully
+</ResponseField>
+
+```bash
+HTTP/1.1 200 OK
+```
+
+<Note>
+  If your endpoint doesn't return a 200 status within 10 seconds, the Plant Store API will consider the webhook delivery failed and may retry the request.
+</Note>
+
+## Implementation Examples
+
+### Node.js with Express
+
+```javascript
+const express = require('express');
+const crypto = require('crypto');
+const app = express();
+
+app.use(express.json());
+
+// Webhook secret (provided when you register your webhook)
+const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
+
+function verifyWebhookSignature(payload, signature, timestamp) {
+  // Reject old requests (older than 5 minutes)
+  const currentTime = Math.floor(Date.now() / 1000);
+  if (Math.abs(currentTime - timestamp) > 300) {
+    return false;
+  }
+  
+  // Verify signature
+  const expectedSignature = crypto
+    .createHmac('sha256', WEBHOOK_SECRET)
+    .update(`${timestamp}.${JSON.stringify(payload)}`)
+    .digest('hex');
+  
+  return crypto.timingSafeEqual(
+    Buffer.from(signature),
+    Buffer.from(expectedSignature)
+  );
+}
+
+app.post('/plant/webhook', (req, res) => {
+  const signature = req.headers['x-webhook-signature'];
+  const timestamp = req.headers['x-webhook-timestamp'];
+  const payload = req.body;
+  
+  // Verify the webhook signature
+  if (!verifyWebhookSignature(payload, signature, timestamp)) {
+    return res.status(401).json({ error: 'Invalid signature' });
+  }
+  
+  // Process the new plant
+  console.log('New plant added:', payload);
+  console.log(`ID: ${payload.id}`);
+  console.log(`Name: ${payload.name}`);
+  console.log(`Tag: ${payload.tag}`);
+  
+  // Your business logic here
+  // - Send notifications
+  // - Update database
+  // - Trigger workflows
+  
+  // Return 200 to acknowledge receipt
+  res.status(200).json({ received: true });
+});
+
+app.listen(3000, () => {
+  console.log('Webhook server listening on port 3000');
+});
+```
+
+### Python with Flask
+
+```python
+from flask import Flask, request, jsonify
+import hmac
+import hashlib
+import json
+import time
+import os
+
+app = Flask(__name__)
+
+# Webhook secret (provided when you register your webhook)
+WEBHOOK_SECRET = os.getenv('WEBHOOK_SECRET').encode()
+
+def verify_webhook_signature(payload, signature, timestamp):
+    # Reject old requests (older than 5 minutes)
+    current_time = int(time.time())
+    if abs(current_time - int(timestamp)) > 300:
+        return False
+    
+    # Verify signature
+    message = f"{timestamp}.{json.dumps(payload)}".encode()
+    expected_signature = hmac.new(
+        WEBHOOK_SECRET,
+        message,
+        hashlib.sha256
+    ).hexdigest()
+    
+    return hmac.compare_digest(signature, expected_signature)
+
+@app.route('/plant/webhook', methods=['POST'])
+def plant_webhook():
+    signature = request.headers.get('X-Webhook-Signature')
+    timestamp = request.headers.get('X-Webhook-Timestamp')
+    payload = request.json
+    
+    # Verify the webhook signature
+    if not verify_webhook_signature(payload, signature, timestamp):
+        return jsonify({'error': 'Invalid signature'}), 401
+    
+    # Process the new plant
+    print(f"New plant added: {payload}")
+    print(f"ID: {payload['id']}")
+    print(f"Name: {payload['name']}")
+    print(f"Tag: {payload.get('tag', 'N/A')}")
+    
+    # Your business logic here
+    # - Send notifications
+    # - Update database
+    # - Trigger workflows
+    
+    # Return 200 to acknowledge receipt
+    return jsonify({'received': True}), 200
+
+if __name__ == '__main__':
+    app.run(port=3000)
+```
+
+### Go with net/http
+
+```go
+package main
+
+import (
+    "crypto/hmac"
+    "crypto/sha256"
+    "encoding/hex"
+    "encoding/json"
+    "fmt"
+    "io/ioutil"
+    "log"
+    "net/http"
+    "os"
+    "strconv"
+    "time"
+)
+
+type Plant struct {
+    ID   int64  `json:"id"`
+    Name string `json:"name"`
+    Tag  string `json:"tag,omitempty"`
+}
+
+var webhookSecret = []byte(os.Getenv("WEBHOOK_SECRET"))
+
+func verifyWebhookSignature(payload []byte, signature string, timestamp string) bool {
+    // Reject old requests (older than 5 minutes)
+    ts, _ := strconv.ParseInt(timestamp, 10, 64)
+    currentTime := time.Now().Unix()
+    if abs(currentTime-ts) > 300 {
+        return false
+    }
+    
+    // Verify signature
+    message := fmt.Sprintf("%s.%s", timestamp, string(payload))
+    mac := hmac.New(sha256.New, webhookSecret)
+    mac.Write([]byte(message))
+    expectedSignature := hex.EncodeToString(mac.Sum(nil))
+    
+    return hmac.Equal([]byte(signature), []byte(expectedSignature))
+}
+
+func plantWebhookHandler(w http.ResponseWriter, r *http.Request) {
+    if r.Method != "POST" {
+        http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+        return
+    }
+    
+    signature := r.Header.Get("X-Webhook-Signature")
+    timestamp := r.Header.Get("X-Webhook-Timestamp")
+    
+    body, _ := ioutil.ReadAll(r.Body)
+    defer r.Body.Close()
+    
+    // Verify the webhook signature
+    if !verifyWebhookSignature(body, signature, timestamp) {
+        http.Error(w, "Invalid signature", http.StatusUnauthorized)
+        return
+    }
+    
+    // Parse the payload
+    var plant Plant
+    if err := json.Unmarshal(body, &plant); err != nil {
+        http.Error(w, "Invalid payload", http.StatusBadRequest)
+        return
+    }
+    
+    // Process the new plant
+    log.Printf("New plant added: %+v\n", plant)
+    log.Printf("ID: %d\n", plant.ID)
+    log.Printf("Name: %s\n", plant.Name)
+    log.Printf("Tag: %s\n", plant.Tag)
+    
+    // Your business logic here
+    
+    // Return 200 to acknowledge receipt
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(map[string]bool{"received": true})
+}
+
+func abs(n int64) int64 {
+    if n < 0 {
+        return -n
+    }
+    return n
+}
+
+func main() {
+    http.HandleFunc("/plant/webhook", plantWebhookHandler)
+    log.Println("Webhook server listening on port 3000")
+    log.Fatal(http.ListenAndServe(":3000", nil))
+}
+```
+
+## Testing Your Webhook
+
+You can test your webhook endpoint using curl or a webhook testing tool:
+
+```bash
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -H "X-Webhook-Signature: test_signature" \
+  -H "X-Webhook-Timestamp: $(date +%s)" \
+  -d '{
+    "id": 42,
+    "name": "Test Plant",
+    "tag": "test"
+  }' \
+  "http://localhost:3000/plant/webhook"
+```
+
+<Note>
+  For local development, use tools like [ngrok](https://ngrok.com) or [localtunnel](https://localtunnel.github.io) to expose your local webhook endpoint to the internet for testing with the real Plant Store API.
+</Note>
+
+## Webhook Registration
+
+To register your webhook URL with the Plant Store API:
+
+1. Contact support with your webhook endpoint URL
+2. Provide the expected rate of webhook deliveries
+3. Receive your webhook secret for signature verification
+4. Test the integration using the provided test mode
+
+## Error Handling and Retries
+
+The Plant Store API implements the following retry logic:
+
+- **Initial delivery attempt** - Webhook is sent immediately when a plant is created
+- **Retry on failure** - If your endpoint doesn't return 200, retries occur at:
+  - 1 minute
+  - 5 minutes
+  - 15 minutes
+  - 1 hour
+  - 6 hours
+- **Maximum retries** - After 5 failed attempts, the webhook is marked as failed
+- **Timeout** - Each request times out after 10 seconds
+
+### Handling Duplicate Webhooks
+
+Due to retries and network issues, you may receive the same webhook multiple times. Implement idempotency:
+
+```javascript
+const processedWebhooks = new Set();
+
+app.post('/plant/webhook', (req, res) => {
+  const webhookId = `${req.body.id}-${req.headers['x-webhook-timestamp']}`;
+  
+  // Check if we've already processed this webhook
+  if (processedWebhooks.has(webhookId)) {
+    console.log('Duplicate webhook, ignoring');
+    return res.status(200).json({ received: true });
+  }
+  
+  // Process the webhook
+  processWebhook(req.body);
+  
+  // Mark as processed
+  processedWebhooks.add(webhookId);
+  
+  res.status(200).json({ received: true });
+});
+```
+
+## Best Practices
+
+- **Respond quickly** - Acknowledge the webhook with 200 before processing
+- **Process asynchronously** - Queue webhooks for background processing
+- **Validate signatures** - Always verify the webhook signature
+- **Handle duplicates** - Implement idempotency to handle retry scenarios
+- **Log everything** - Keep detailed logs for debugging and audit trails
+- **Use HTTPS** - Always use HTTPS endpoints for webhooks in production
+- **Monitor webhook health** - Track delivery success rates and latency
+- **Implement timeouts** - Don't let webhook processing block indefinitely
+
+## Security Considerations
+
+- **Verify signatures** - Never trust webhook data without signature verification
+- **Validate timestamps** - Reject old requests to prevent replay attacks
+- **Use secrets securely** - Store webhook secrets in environment variables, never in code
+- **Rate limit** - Implement rate limiting to prevent abuse
+- **Whitelist IPs** - If possible, only accept webhooks from known Plant Store API IPs
+
+## Monitoring and Debugging
+
+### Webhook Logs
+
+Implement comprehensive logging:
+
+```python
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+@app.route('/plant/webhook', methods=['POST'])
+def plant_webhook():
+    logger.info(f"Webhook received: {request.headers}")
+    logger.info(f"Payload: {request.json}")
+    
+    # ... process webhook ...
+    
+    logger.info("Webhook processed successfully")
+    return jsonify({'received': True}), 200
+```
+
+### Health Check Endpoint
+
+Provide a health check endpoint for monitoring:
+
+```javascript
+app.get('/webhook/health', (req, res) => {
+  res.status(200).json({
+    status: 'healthy',
+    timestamp: new Date().toISOString()
+  });
+});
+```
+
+## Related Endpoints
+
+- [Create Plant](/api-reference/endpoint/create) - The action that triggers this webhook
+- [Get Plants](/api-reference/endpoint/get) - Retrieve plant information

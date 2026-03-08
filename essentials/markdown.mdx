@@ -1,88 +1,283 @@
 ---
-title: 'Markdown syntax'
-description: 'Text, title, and styling in standard markdown'
+title: 'Markdown & MDX'
+description: 'Write documentation using Markdown syntax and Mintlify components'
 icon: 'text-size'
 ---
 
-## Titles
+Mintlify pages are written in MDX, a powerful extension of Markdown that lets you embed interactive components directly in your documentation.
 
-Best used for section headers.
+## Basic Markdown syntax
 
-```md
-## Titles
-```
+### Headings
 
-### Subtitles
-
-Best used for subsection headers.
+Use `##` for section headers and `###` for subsection headers. Each heading creates an anchor link and appears in the table of contents.
 
 ```md
-### Subtitles
+## Section heading
+
+### Subsection heading
 ```
 
 <Tip>
-
-Each **title** and **subtitle** creates an anchor and also shows up on the table of contents on the right.
-
+Headings automatically generate URL anchors, so `## Getting Started` creates an anchor at `#getting-started` that you can link to.
 </Tip>
 
-## Text formatting
+### Text formatting
 
-We support most markdown formatting. Simply add `**`, `_`, or `~` around text to format it.
+Format text using standard Markdown syntax:
 
-| Style         | How to write it   | Result          |
+| Style         | Syntax            | Result          |
 | ------------- | ----------------- | --------------- |
 | Bold          | `**bold**`        | **bold**        |
 | Italic        | `_italic_`        | _italic_        |
 | Strikethrough | `~strikethrough~` | ~strikethrough~ |
 
-You can combine these. For example, write `**_bold and italic_**` to get **_bold and italic_** text.
+Combine styles for emphasis: `**_bold and italic_**` renders as **_bold and italic_**.
 
-You need to use HTML to write superscript and subscript text. That is, add `<sup>` or `<sub>` around your text.
+For superscript and subscript, use HTML tags:
 
-| Text Size   | How to write it          | Result                 |
+| Style       | Syntax                   | Result                 |
 | ----------- | ------------------------ | ---------------------- |
 | Superscript | `<sup>superscript</sup>` | <sup>superscript</sup> |
 | Subscript   | `<sub>subscript</sub>`   | <sub>subscript</sub>   |
 
-## Linking to pages
+### Lists
 
-You can add a link by wrapping text in `[]()`. You would write `[link to google](https://google.com)` to [link to google](https://google.com).
-
-Links to pages in your docs need to be root-relative. Basically, you should include the entire folder path. For example, `[link to text](/writing-content/text)` links to the page "Text" in our components section.
-
-Relative links like `[link to text](../text)` will open slower because we cannot optimize them as easily.
-
-## Blockquotes
-
-### Singleline
-
-To create a blockquote, add a `>` in front of a paragraph.
-
-> Dorothy followed her through many of the beautiful rooms in her castle.
+Create unordered lists with `-` or `*`:
 
 ```md
-> Dorothy followed her through many of the beautiful rooms in her castle.
+- First item
+- Second item
+  - Nested item
+  - Another nested item
 ```
 
-### Multiline
-
-> Dorothy followed her through many of the beautiful rooms in her castle.
->
-> The Witch bade her clean the pots and kettles and sweep the floor and keep the fire fed with wood.
+Create ordered lists with numbers:
 
 ```md
-> Dorothy followed her through many of the beautiful rooms in her castle.
->
-> The Witch bade her clean the pots and kettles and sweep the floor and keep the fire fed with wood.
+1. First step
+2. Second step
+3. Third step
 ```
 
-### LaTeX
+### Links
 
-Mintlify supports [LaTeX](https://www.latex-project.org) through the Latex component.
+Link to external sites: `[Google](https://google.com)` creates [Google](https://google.com).
 
-<Latex>8 x (vk x H1 - H2) = (0,1)</Latex>
+Link to internal pages using root-relative paths: `[Settings](/essentials/settings)` links to [Settings](/essentials/settings).
+
+<Warning>
+Avoid relative links like `../settings`. Use root-relative paths like `/essentials/settings` for better performance and reliability.
+</Warning>
+
+### Blockquotes
+
+Create blockquotes with `>`:
+
+> Documentation is a love letter that you write to your future self.
+> 
+> — Damian Conway
 
 ```md
-<Latex>8 x (vk x H1 - H2) = (0,1)</Latex>
+> Documentation is a love letter that you write to your future self.
+> 
+> — Damian Conway
 ```
+
+## Mintlify components
+
+MDX lets you use powerful React components in your documentation. Here are the most commonly used Mintlify components:
+
+### Callout components
+
+<CardGroup cols={2}>
+  <Card title="Note" icon="circle-info">
+    Use `<Note>` for helpful information
+  </Card>
+  <Card title="Tip" icon="lightbulb">
+    Use `<Tip>` for pro tips and best practices
+  </Card>
+  <Card title="Warning" icon="triangle-exclamation">
+    Use `<Warning>` for important warnings
+  </Card>
+  <Card title="Info" icon="circle-info">
+    Use `<Info>` for general information
+  </Card>
+</CardGroup>
+
+Example usage:
+
+<Note>
+This is a note callout. Use it to highlight helpful information that users should be aware of.
+</Note>
+
+```mdx
+<Note>
+This is a note callout. Use it to highlight helpful information.
+</Note>
+```
+
+### Card and CardGroup
+
+Display content in cards for better visual organization:
+
+<CardGroup cols={2}>
+  <Card title="Getting Started" icon="rocket" href="/quickstart">
+    Jump right in with our quickstart guide
+  </Card>
+  <Card title="API Reference" icon="code" href="/api-reference/introduction">
+    Explore our API endpoints
+  </Card>
+  <Card title="Guides" icon="book-open" href="/essentials/markdown">
+    Learn best practices
+  </Card>
+  <Card title="Examples" icon="stars" href="/development">
+    See real-world examples
+  </Card>
+</CardGroup>
+
+```mdx
+<CardGroup cols={2}>
+  <Card title="Getting Started" icon="rocket" href="/quickstart">
+    Jump right in with our quickstart guide
+  </Card>
+  <Card title="API Reference" icon="code" href="/api-reference/introduction">
+    Explore our API endpoints
+  </Card>
+</CardGroup>
+```
+
+### Accordion
+
+Use accordions to hide detailed content until needed:
+
+<AccordionGroup>
+  <Accordion title="What is MDX?">
+    MDX is a format that lets you write JSX (React components) in your Markdown documents. This means you can import and use interactive components alongside your content.
+  </Accordion>
+  <Accordion title="Why use components in documentation?">
+    Components make your documentation interactive and engaging. They help you present information in structured, scannable formats that improve the user experience.
+  </Accordion>
+  <Accordion title="Can I create custom components?">
+    Yes! You can create custom components in your snippets directory and import them into any page. See the [Reusable Snippets](/essentials/reusable-snippets) guide for details.
+  </Accordion>
+</AccordionGroup>
+
+```mdx
+<AccordionGroup>
+  <Accordion title="What is MDX?">
+    MDX is a format that lets you write JSX in your Markdown documents.
+  </Accordion>
+  <Accordion title="Why use components?">
+    Components make your documentation interactive and engaging.
+  </Accordion>
+</AccordionGroup>
+```
+
+### Tabs
+
+Present alternative options or multi-language examples:
+
+<Tabs>
+  <Tab title="npm">
+    ```bash
+    npm install mintlify
+    ```
+  </Tab>
+  <Tab title="yarn">
+    ```bash
+    yarn add mintlify
+    ```
+  </Tab>
+  <Tab title="pnpm">
+    ```bash
+    pnpm add mintlify
+    ```
+  </Tab>
+</Tabs>
+
+**Code:**
+```jsx
+<Tabs>
+  <Tab title="npm">
+    npm install mintlify
+  </Tab>
+  <Tab title="yarn">
+    yarn add mintlify
+  </Tab>
+</Tabs>
+```
+
+### Steps
+
+Guide users through sequential processes:
+
+<Steps>
+  <Step title="Install Mintlify">
+    Install the Mintlify CLI to preview your documentation locally.
+    
+    ```bash
+    npm i -g mintlify
+    ```
+  </Step>
+  <Step title="Navigate to your docs">
+    Go to the directory where your documentation is located.
+    
+    ```bash
+    cd path/to/docs
+    ```
+  </Step>
+  <Step title="Start the dev server">
+    Preview your changes locally with hot reloading.
+    
+    ```bash
+    mintlify dev
+    ```
+  </Step>
+</Steps>
+
+**Code:**
+```jsx
+<Steps>
+  <Step title="Install Mintlify">
+    Install the CLI to preview docs locally.
+  </Step>
+  <Step title="Start dev server">
+    Preview your changes with hot reloading.
+  </Step>
+</Steps>
+```
+
+## Advanced features
+
+### LaTeX math
+
+Render mathematical expressions using LaTeX with the `<Latex>` component:
+
+```jsx
+<Latex>E = mc^2</Latex>
+```
+
+You can also use inline math notation for complex formulas.
+
+### Tables
+
+Create tables using standard Markdown syntax:
+
+| Feature | Markdown | MDX | Mintlify |
+| ------- | -------- | --- | -------- |
+| Basic formatting | ✓ | ✓ | ✓ |
+| Components | ✗ | ✓ | ✓ |
+| Syntax highlighting | ✗ | ✗ | ✓ |
+| Auto-generated nav | ✗ | ✗ | ✓ |
+
+```md
+| Feature | Markdown | MDX | Mintlify |
+| ------- | -------- | --- | -------- |
+| Basic formatting | ✓ | ✓ | ✓ |
+| Components | ✗ | ✓ | ✓ |
+```
+
+<Info>
+Explore more components in the [Mintlify documentation](https://mintlify.com/docs/content/components/accordions) to enhance your docs.
+</Info>

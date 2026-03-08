@@ -1,4 +1,303 @@
 ---
 title: 'Create Plant'
-openapi: 'POST /plants'
+description: 'Add a new plant to the store with name and optional tag information'
 ---
+
+## Overview
+
+The Create Plant endpoint allows you to add a new plant to the store. Each plant must have a unique name and can optionally include a tag for categorization.
+
+## Endpoint
+
+```bash
+POST /plants
+```
+
+## Authentication
+
+This endpoint requires Bearer token authentication. Include your token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_TOKEN
+```
+
+## Request Body
+
+The request body must be sent as JSON with the `Content-Type: application/json` header.
+
+<ParamField body="name" type="string" required>
+  The name of the plant. This is a required field and should contain the common or scientific name of the plant.
+  
+  **Requirements:**
+  - Must be a non-empty string
+  - Should be unique within your plant collection
+  
+  **Examples:**
+  - "Monstera Deliciosa"
+  - "Sansevieria Trifasciata" 
+  - "Pothos"
+</ParamField>
+
+<ParamField body="tag" type="string">
+  Optional tag to categorize or classify the plant. Use tags to organize your plant collection by type, location, care requirements, or any other classification system.
+  
+  **Suggested tags:**
+  - "tropical" - Tropical plants requiring warm, humid conditions
+  - "succulent" - Water-storing plants requiring minimal watering
+  - "flowering" - Plants that produce flowers
+  - "indoor" - Plants suitable for indoor growing
+  - "outdoor" - Plants suitable for outdoor growing
+  - "low-light" - Plants that thrive in low-light conditions
+  - "pet-safe" - Plants that are non-toxic to pets
+</ParamField>
+
+## Request Example
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Monstera Deliciosa",
+    "tag": "tropical"
+  }' \
+  "http://sandbox.mintlify.com/plants"
+```
+
+```javascript JavaScript
+const response = await fetch('http://sandbox.mintlify.com/plants', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_TOKEN',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    name: 'Monstera Deliciosa',
+    tag: 'tropical'
+  })
+});
+
+const plant = await response.json();
+console.log(plant);
+```
+
+```python Python
+import requests
+import json
+
+headers = {
+    'Authorization': 'Bearer YOUR_TOKEN',
+    'Content-Type': 'application/json'
+}
+
+data = {
+    'name': 'Monstera Deliciosa',
+    'tag': 'tropical'
+}
+
+response = requests.post(
+    'http://sandbox.mintlify.com/plants',
+    headers=headers,
+    data=json.dumps(data)
+)
+
+plant = response.json()
+print(plant)
+```
+
+```go Go
+package main
+
+import (
+    "bytes"
+    "encoding/json"
+    "net/http"
+)
+
+func main() {
+    data := map[string]string{
+        "name": "Monstera Deliciosa",
+        "tag":  "tropical",
+    }
+    
+    jsonData, _ := json.Marshal(data)
+    
+    req, _ := http.NewRequest(
+        "POST",
+        "http://sandbox.mintlify.com/plants",
+        bytes.NewBuffer(jsonData),
+    )
+    
+    req.Header.Set("Authorization", "Bearer YOUR_TOKEN")
+    req.Header.Set("Content-Type", "application/json")
+    
+    client := &http.Client{}
+    resp, _ := client.Do(req)
+    defer resp.Body.Close()
+}
+```
+
+</CodeGroup>
+
+## Response
+
+### Success Response (200)
+
+Returns the created plant object with the assigned ID.
+
+<ResponseField name="id" type="integer" format="int64" required>
+  Unique identification number automatically assigned to the plant when it's created. Use this ID for subsequent operations like deletion.
+</ResponseField>
+
+<ResponseField name="name" type="string" required>
+  The name of the plant as provided in the request
+</ResponseField>
+
+<ResponseField name="tag" type="string">
+  The tag assigned to the plant, if provided in the request
+</ResponseField>
+
+```json
+{
+  "id": 42,
+  "name": "Monstera Deliciosa",
+  "tag": "tropical"
+}
+```
+
+### Error Response (400)
+
+Returned when the request is invalid or cannot be processed.
+
+<ResponseField name="error" type="integer" format="int32" required>
+  The error code indicating the type of error that occurred
+</ResponseField>
+
+<ResponseField name="message" type="string" required>
+  A descriptive error message explaining what went wrong and how to fix it
+</ResponseField>
+
+```json
+{
+  "error": 400,
+  "message": "Plant name is required and cannot be empty"
+}
+```
+
+## Usage Examples
+
+### Create a Simple Plant
+
+Create a plant with just a name:
+
+```bash
+curl -X POST \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Spider Plant"}' \
+  "http://sandbox.mintlify.com/plants"
+```
+
+### Create a Tagged Plant
+
+Create a plant with both name and tag:
+
+```bash
+curl -X POST \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Aloe Vera",
+    "tag": "succulent"
+  }' \
+  "http://sandbox.mintlify.com/plants"
+```
+
+### Batch Create Plants
+
+Create multiple plants sequentially:
+
+```javascript
+const plantsToCreate = [
+  { name: 'Pothos', tag: 'indoor' },
+  { name: 'Snake Plant', tag: 'low-light' },
+  { name: 'Peace Lily', tag: 'flowering' }
+];
+
+for (const plant of plantsToCreate) {
+  const response = await fetch('http://sandbox.mintlify.com/plants', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer YOUR_TOKEN',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(plant)
+  });
+  
+  const created = await response.json();
+  console.log(`Created plant with ID: ${created.id}`);
+}
+```
+
+<Warning>
+  Ensure that plant names are unique to avoid confusion. While the API may allow duplicate names, it's best practice to use unique identifiers.
+</Warning>
+
+## Common Error Scenarios
+
+### Missing Required Field
+
+```json
+Request:
+{
+  "tag": "tropical"
+}
+
+Response (400):
+{
+  "error": 400,
+  "message": "Plant name is required and cannot be empty"
+}
+```
+
+### Invalid Content Type
+
+Forgetting to set the `Content-Type` header to `application/json` will result in an error:
+
+```bash
+# Incorrect - missing Content-Type header
+curl -X POST \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -d '{"name": "Plant"}' \
+  "http://sandbox.mintlify.com/plants"
+```
+
+### Unauthorized Request
+
+```json
+Response (401):
+{
+  "error": 401,
+  "message": "Invalid or missing authentication token"
+}
+```
+
+<Note>
+  After creating a plant, save the returned ID if you need to reference or delete the plant later. The ID is auto-generated and cannot be specified in the request.
+</Note>
+
+## Best Practices
+
+- **Validate input** before sending the request to reduce errors
+- **Use meaningful tags** to organize your plant collection effectively
+- **Store the returned ID** for future operations on the plant
+- **Handle duplicate names** in your application logic
+- **Implement error handling** for network failures and validation errors
+
+## Related Endpoints
+
+- [Get Plants](/api-reference/endpoint/get) - Retrieve all plants from the store
+- [Delete Plant](/api-reference/endpoint/delete) - Remove a plant by ID
+- [Plant Webhook](/api-reference/endpoint/webhook) - Receive notifications when plants are created

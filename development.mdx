@@ -14,9 +14,14 @@ Follow these steps to install and run Mintlify on your operating system.
 <Steps>
 <Step title="Install the Mintlify CLI">
 
+Install the CLI globally using npm:
+
 ```bash
 npm i -g mint
 ```
+
+This gives you access to the `mint` command for local development and validation.
+
 </Step>
 
 <Step title="Preview locally">
@@ -28,6 +33,10 @@ mint dev
 ```
 
 A local preview of your documentation will be available at `http://localhost:3000`.
+
+<Tip>
+  Your preview updates automatically as you edit files. No need to restart the server!
+</Tip>
 
 </Step>
 </Steps>
@@ -46,15 +55,23 @@ If you attempt to run Mintlify on a port that's already in use, it will use the 
 Port 3000 is already in use. Trying 3001 instead.
 ```
 
-## Mintlify versions
+## CLI commands
 
-Please note that each CLI release is associated with a specific version of Mintlify. If your local preview does not align with the production version, please update the CLI:
+The Mintlify CLI provides several useful commands for managing your documentation:
+
+### Update CLI version
+
+Keep your CLI up to date to ensure your local preview matches production:
 
 ```bash
 npm mint update
 ```
 
-## Validating links
+<Note>
+  Each CLI release is associated with a specific version of Mintlify. If your local preview does not align with the production version, update the CLI.
+</Note>
+
+### Validate links
 
 The CLI can assist with validating links in your documentation. To identify any broken links, use the following command:
 
@@ -62,17 +79,35 @@ The CLI can assist with validating links in your documentation. To identify any 
 mint broken-links
 ```
 
+This command crawls your entire documentation site and reports any broken internal or external links.
+
+## Best practices
+
+<CardGroup cols={2}>
+<Card title="Use AI-assisted writing" icon="wand-magic-sparkles">
+  Install the Mintlify skill for your AI coding tool:
+  
+  ```bash
+  npx skills add https://mintlify.com/docs
+  ```
+</Card>
+
+<Card title="Code formatting" icon="code">
+  Use the [MDX VSCode extension](https://marketplace.visualstudio.com/items?itemName=unifiedjs.vscode-mdx) for syntax highlighting and [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) for formatting.
+</Card>
+</CardGroup>
+
 ## Deployment
 
-If the deployment is successful, you should see the following:
+When you push changes to your repository, the Mintlify GitHub app automatically deploys your updates. If the deployment is successful, you should see the following:
 
 <Frame>
   <img src="/images/checks-passed.png" alt="Screenshot of a deployment confirmation message that says All checks have passed." style={{ borderRadius: '0.5rem' }} />
 </Frame>
 
-## Code formatting
-
-We suggest using extensions on your IDE to recognize and format MDX. If you're a VSCode user, consider the [MDX VSCode extension](https://marketplace.visualstudio.com/items?itemName=unifiedjs.vscode-mdx) for syntax highlighting, and [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) for code formatting.
+<Tip>
+  Changes are deployed to production automatically after pushing to the default branch.
+</Tip>
 
 ## Troubleshooting
 
@@ -80,15 +115,67 @@ We suggest using extensions on your IDE to recognize and format MDX. If you're a
   <Accordion title='Error: Could not load the "sharp" module using the darwin-arm64 runtime'>
 
     This may be due to an outdated version of node. Try the following:
-    1. Remove the currently-installed version of the CLI: `npm remove -g mint`
+    
+    1. Remove the currently-installed version of the CLI:
+    ```bash
+    npm remove -g mint
+    ```
+    
     2. Upgrade to Node v19 or higher.
-    3. Reinstall the CLI: `npm i -g mint`
+    
+    3. Reinstall the CLI:
+    ```bash
+    npm i -g mint
+    ```
   </Accordion>
 
   <Accordion title="Issue: Encountering an unknown error">
   
-    Solution: Go to the root of your device and delete the `~/.mintlify` folder. Then run `mint dev` again.
+    Go to the root of your device and delete the `~/.mintlify` folder. Then run `mint dev` again:
+
+    ```bash
+    rm -rf ~/.mintlify
+    mint dev
+    ```
+  </Accordion>
+
+  <Accordion title="Issue: Dev environment isn't running">
+    
+    Run `mint update` to ensure you have the most recent version of the CLI:
+
+    ```bash
+    npm mint update
+    ```
+
+    If the issue persists, try removing and reinstalling the CLI.
+  </Accordion>
+
+  <Accordion title="Issue: Page loads as a 404">
+    
+    Make sure you are running in a folder with a valid `docs.json` file. The CLI must be run from the root of your documentation directory.
+
+    Verify your `docs.json` navigation includes the page path:
+
+    ```json
+    {
+      "navigation": {
+        "tabs": [
+          {
+            "tab": "Guides",
+            "groups": [
+              {
+                "group": "Getting started",
+                "pages": ["index", "quickstart", "development"]
+              }
+            ]
+          }
+        ]
+      }
+    }
+    ```
   </Accordion>
 </AccordionGroup>
 
-Curious about what changed in the latest CLI version? Check out the [CLI changelog](https://www.npmjs.com/package/mintlify?activeTab=versions).
+<Warning>
+  If you continue to experience issues, check the [CLI changelog](https://www.npmjs.com/package/mintlify?activeTab=versions) for breaking changes or known issues.
+</Warning>
